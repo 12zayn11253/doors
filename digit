@@ -112,7 +112,6 @@ local Tabs = {
     Misc = Window:AddTab({ Title = "| Misc", Icon = "rbxassetid://7733789088" }),
     Shop = Window:AddTab({ Title = "| Shop", Icon = "rbxassetid://7734056747" }),
     Teleport = Window:AddTab({ Title = "| Teleport", Icon = "rbxassetid://7733992789" }),
-    Event = Window:AddTab({ Title = "| Event", Icon = "rbxassetid://7733955511" }),
 
 }
 
@@ -949,6 +948,4 @@ Tabs.Main:AddToggle("LegitDigToggle", {
 
 -- Trigger Legit Dig when the DigMinigame is added to the player's UI
 HandleConnection(Player.PlayerGui.Main.ChildAdded:Connect(LegitDig), "LegitDig")
-
-
 
