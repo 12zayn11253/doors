@@ -63,6 +63,18 @@ table.sort(Shovels, function(a,b)
 end)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 local CollectionService = game:GetService("CollectionService")
 
 local Player = game:GetService("Players").LocalPlayer
@@ -70,6 +82,8 @@ local Player = game:GetService("Players").LocalPlayer
 local Network = ReplicatedStorage:WaitForChild("Source"):WaitForChild("Network")
 local RemoteFunctions: {[string]: RemoteFunction} = Network:WaitForChild("RemoteFunctions")
 local RemoteEvents: {[string]: RemoteEvent} = Network:WaitForChild("RemoteEvents")
+
+
 
 
 
@@ -87,12 +101,19 @@ local Window = Fluent:CreateWindow({
 
 
 
+
+
+
+
 local Tabs = {
     Home = Window:AddTab({ Title = "| Home", Icon = "rbxassetid://7733960981" }),
     Main = Window:AddTab({ Title = "| Main", Icon = "rbxassetid://7743869612" }),
+    items = Window:AddTab({ Title = "| Items", Icon = "rbxassetid://7734056878" }),
     Misc = Window:AddTab({ Title = "| Misc", Icon = "rbxassetid://7733789088" }),
     Shop = Window:AddTab({ Title = "| Shop", Icon = "rbxassetid://7734056747" }),
     Teleport = Window:AddTab({ Title = "| Teleport", Icon = "rbxassetid://7733992789" }),
+    Event = Window:AddTab({ Title = "| Event", Icon = "rbxassetid://7733955511" }),
+
 }
 
 
@@ -114,6 +135,10 @@ Tabs.Home:AddButton({
         end
     end
 })
+
+
+
+
 
 
 
@@ -166,6 +191,9 @@ local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
         end
     end
 })
+
+
+
 
 
 
@@ -241,7 +269,7 @@ local function SellInventory()
 end
 
 -- Adding the button to the Fluent UI
-Tabs.Misc:AddButton({
+Tabs.items:AddButton({
     Title = "Quick Sell Inventory",
     Description = "",
     Callback = SellInventory
@@ -252,7 +280,7 @@ Tabs.Misc:AddButton({
 local Flags = Flags or {}  -- Ensure Flags is initialized
 Flags.Sell = Flags.Sell or { CurrentValue = false }  -- Ensure the 'Sell' flag is initialized
 
-local Toggle = Tabs.Misc:AddToggle("MyToggle", {
+local Toggle = Tabs.items:AddToggle("MyToggle", {
     Title = "Auto Sell Inventory (When Backpack Full)",
     Description = "",
     Default = false,
@@ -326,6 +354,9 @@ local Toggle = Tabs.Misc:AddToggle("MyToggle", {
 
 
 
+
+
+
 local Dropdown = Tabs.Shop:AddDropdown("Purchase Shovel", { 
     Title = "Purchase Shovel",
     Description = "",
@@ -352,7 +383,7 @@ local Dropdown = Tabs.Shop:AddDropdown("Purchase Shovel", {
 
 
 -- Adding the "Quick Appraise Held Item" button to the Fluent UI
-Tabs.Misc:AddButton({
+Tabs.items:AddButton({
     Title = `Quick Appraise Held Item [${RemoteFunctions.LootPit:InvokeServer({Command = "GetPlayerPrice"})}]`,
     Description = "",
     Callback = function()
@@ -370,7 +401,7 @@ local Flags = {
     Salary = { CurrentValue = false }
 }
 
-local Toggle = Tabs.Misc:AddToggle("MyToggle", {
+local Toggle = Tabs.items:AddToggle("MyToggle", {
     Title = "Auto Collect Salary Rewards",
     Description = "It Will Appear As Unclaimed",
     Default = false,
@@ -730,6 +761,10 @@ local Slider = Tabs.Misc:AddSlider("GravitySlider",
     end
 })
 
+
+
+
+
 local Slider = Tabs.Misc:AddSlider("AssSlider", 
 {
     Title = "HipHeight",
@@ -773,6 +808,8 @@ local Input = Tabs.Misc:AddInput("FOVInput",
 
 
 
+
+
 -- Ensure Flags is initialized if not already done
 Flags = Flags or {}
 
@@ -805,6 +842,11 @@ local CreatePilesToggle = Tabs.Main:AddToggle("CreatePilesToggle", {
     end
 })
 
+
+
+
+
+
 -- Auto Legit Create Piles Toggle (Needed for Legit Dig)
 local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
     Title = "Auto Create Piles",
@@ -829,6 +871,10 @@ local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
         end
     end
 })
+
+
+
+
 
 
 
@@ -903,5 +949,6 @@ Tabs.Main:AddToggle("LegitDigToggle", {
 
 -- Trigger Legit Dig when the DigMinigame is added to the player's UI
 HandleConnection(Player.PlayerGui.Main.ChildAdded:Connect(LegitDig), "LegitDig")
+
 
 
