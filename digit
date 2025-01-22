@@ -199,7 +199,7 @@ local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
 
 local Flags = {
     Sell = {
-        CurrentValue = true
+        CurrentValue = true 
     }
 }
 
@@ -266,8 +266,8 @@ Tabs.items:AddButton({
 
 
 
-local Flags = Flags or {} 
-Flags.Sell = Flags.Sell or { CurrentValue = false }
+local Flags = Flags or {}  
+Flags.Sell = Flags.Sell or { CurrentValue = false } 
 
 local Toggle = Tabs.items:AddToggle("MyToggle", {
     Title = "Auto Sell Inventory (When Backpack Full)",
@@ -348,15 +348,14 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
 local Dropdown = Tabs.Shop:AddDropdown("Purchase Shovel", { 
     Title = "Purchase Shovel",
     Description = "",
-    Values = Shovels,
-    Multi = false,
+    Values = Shovels, 
+    Multi = false, 
     Default = nil, 
     Callback = function(CurrentOption)
         if not CurrentOption or CurrentOption == "" then
-            return
+            return 
         end
 
-       
         RemoteFunctions.Shop:InvokeServer({
             Command = "Buy",
             Type = "Item",
@@ -427,15 +426,15 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
 
 
 
-local HideGui = false
+local HideGui = false  
 
 local Toggle = Tabs.Misc:AddToggle("MyToggle",  
 {
     Title = "Hide/Show UIs", 
     Description = "",
-    Default = false, 
+    Default = false,  
     Callback = function(newState)
-        HideGui = newState 
+        HideGui = newState  
 
         for _, gui in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
             if gui:IsA("ScreenGui") then
@@ -447,7 +446,7 @@ local Toggle = Tabs.Misc:AddToggle("MyToggle",
 
 for _, gui in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
     if gui:IsA("ScreenGui") then
-        gui.Enabled = not HideGui
+        gui.Enabled = not HideGui 
     end
 end
 
@@ -802,7 +801,7 @@ local CreatePilesToggle = Tabs.Main:AddToggle("CreatePilesToggle", {
     Description = "",
     Default = false,
     Callback = function(Value)    
-        Flags.CreatePiles.CurrentValue = Value
+        Flags.CreatePiles.CurrentValue = Value 
         while Flags.CreatePiles.CurrentValue and task.wait() do    
             if Player:GetAttribute("PileCount") ~= 0 then
                 continue
@@ -831,7 +830,7 @@ local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
     Description = "",
     Default = false,
     Callback = function(Value)    
-        Flags.LegitPiles.CurrentValue = Value
+        Flags.LegitPiles.CurrentValue = Value 
         while Flags.LegitPiles.CurrentValue and task.wait() do
             local Tool = Player.Character:FindFirstChildOfClass("Tool")
             
@@ -858,8 +857,8 @@ local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
 
 
 
-local Flags = Flags or {}
-Flags.LegitDig = Flags.LegitDig or { CurrentValue = false }
+local Flags = Flags or {}  
+Flags.LegitDig = Flags.LegitDig or { CurrentValue = false } 
 
 local Toggle = Tabs.Main:AddToggle("DigToggle", {
     Title = "Auto Fast Dig",
@@ -915,7 +914,7 @@ Tabs.Main:AddToggle("LegitDigToggle", {
     Description = "",
     Default = false,
     Callback = function(Value)
-        Flags.LegitDig.CurrentValue = Value
+        Flags.LegitDig.CurrentValue = Value  
         if Value then
             LegitDig()
         end
@@ -923,4 +922,7 @@ Tabs.Main:AddToggle("LegitDigToggle", {
 })
 
 HandleConnection(Player.PlayerGui.Main.ChildAdded:Connect(LegitDig), "LegitDig")
+
+
+
 
