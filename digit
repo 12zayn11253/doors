@@ -197,14 +197,12 @@ local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
 
 
 
--- Initialize Flags
 local Flags = {
     Sell = {
-        CurrentValue = true -- Default value; can be toggled as needed.
+        CurrentValue = true
     }
 }
 
--- Function to get inventory size
 local function GetInventorySize()
     local Inventory: {[string]: {["Attributes"]: {["Weight"]: number}}} = RemoteFunctions.Player:InvokeServer({
         Command = "GetInventory"
@@ -219,12 +217,9 @@ local function GetInventorySize()
     return InventorySize
 end
 
--- Function to sell inventory
 local function SellInventory()
-    -- Prevent the character from falling down during the process
     Player.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
     
-    -- Find the nearest merchant
     local Merchant: Model
     for _, v: TextLabel in workspace.Map.Islands:GetDescendants() do
         if v.Name ~= "Title" or not v:IsA("TextLabel") or v.Text ~= "Merchant" then
@@ -234,13 +229,11 @@ local function SellInventory()
         break
     end
 
-    -- If no merchant is found, exit the function
     if not Merchant then
         warn("No merchant found in the map.")
         return
     end
 
-    -- Store initial values
     local SellEnabled = Flags.Sell.CurrentValue
     local PreviousPosition = Player.Character:GetPivot()
     local PreviousSize = GetInventorySize()
@@ -248,7 +241,6 @@ local function SellInventory()
     local Teleported = false
     local StartTime = tick()
 
-    -- Repeat the selling process until inventory size changes or timeout
     repeat
         Player.Character:PivotTo(Merchant:GetPivot())
 
@@ -261,13 +253,11 @@ local function SellInventory()
         Teleported = true
     until GetInventorySize() ~= PreviousSize or Flags.Sell.CurrentValue ~= SellEnabled or tick() - StartTime >= 3
 
-    -- Return the character to its previous position
     if Teleported then
         Player.Character:PivotTo(PreviousPosition)
     end
 end
 
--- Adding the button to the Fluent UI
 Tabs.items:AddButton({
     Title = "Quick Sell Inventory",
     Description = "",
@@ -276,15 +266,14 @@ Tabs.items:AddButton({
 
 
 
-local Flags = Flags or {}  -- Ensure Flags is initialized
-Flags.Sell = Flags.Sell or { CurrentValue = false }  -- Ensure the 'Sell' flag is initialized
+local Flags = Flags or {} 
+Flags.Sell = Flags.Sell or { CurrentValue = false }
 
 local Toggle = Tabs.items:AddToggle("MyToggle", {
     Title = "Auto Sell Inventory (When Backpack Full)",
     Description = "",
     Default = false,
     Callback = function(Value)
-        -- Update the flag value based on the toggle state
         Flags.Sell.CurrentValue = Value
 
         local function GetInventorySize()
@@ -359,15 +348,15 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
 local Dropdown = Tabs.Shop:AddDropdown("Purchase Shovel", { 
     Title = "Purchase Shovel",
     Description = "",
-    Values = Shovels, -- Use the `Shovels` table directly
-    Multi = false, -- Single option only
-    Default = nil, -- Default to None (no pre-selected option)
+    Values = Shovels,
+    Multi = false,
+    Default = nil, 
     Callback = function(CurrentOption)
         if not CurrentOption or CurrentOption == "" then
-            return -- Do nothing if no valid option is selected
+            return
         end
 
-        -- Invoke the server with the selected shovel's information
+       
         RemoteFunctions.Shop:InvokeServer({
             Command = "Buy",
             Type = "Item",
@@ -375,13 +364,11 @@ local Dropdown = Tabs.Shop:AddDropdown("Purchase Shovel", {
             Amount = 1
         })
 
-        -- Resetting the dropdown to None isn't directly supported in Fluent.
-        -- Workaround: Clear user context or provide feedback as needed.
+
     end,
 })
 
 
--- Adding the "Quick Appraise Held Item" button to the Fluent UI
 Tabs.items:AddButton({
     Title = `Quick Appraise Held Item [${RemoteFunctions.LootPit:InvokeServer({Command = "GetPlayerPrice"})}]`,
     Description = "",
@@ -395,7 +382,6 @@ Tabs.items:AddButton({
 
 local CollectedRewards = {}
 
--- Define Flags for your toggle
 local Flags = {
     Salary = { CurrentValue = false }
 }
@@ -405,7 +391,6 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
     Description = "It Will Appear As Unclaimed",
     Default = false,
     Callback = function(Value)
-        -- Update Flags when toggle changes
         Flags.Salary.CurrentValue = Value
         
         while Flags.Salary.CurrentValue and task.wait() do
@@ -442,29 +427,27 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
 
 
 
-local HideGui = false  -- Set initial state to false (UI is visible)
+local HideGui = false
 
 local Toggle = Tabs.Misc:AddToggle("MyToggle",  
 {
     Title = "Hide/Show UIs", 
     Description = "",
-    Default = false,  -- Default state of the toggle is false
+    Default = false, 
     Callback = function(newState)
-        HideGui = newState  -- Set HideGui to the toggle state (true or false)
+        HideGui = newState 
 
-        -- Toggle the visibility of the UIs based on HideGui state
         for _, gui in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
             if gui:IsA("ScreenGui") then
-                gui.Enabled = not HideGui  -- If HideGui is true, hide the UI, else show it
+                gui.Enabled = not HideGui 
             end
         end
     end
 })
 
--- Ensure the UI is visible initially (based on the HideGui state)
 for _, gui in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
     if gui:IsA("ScreenGui") then
-        gui.Enabled = not HideGui  -- Show the UI if HideGui is false (default)
+        gui.Enabled = not HideGui
     end
 end
 
@@ -809,20 +792,17 @@ local Input = Tabs.Misc:AddInput("FOVInput",
 
 
 
--- Ensure Flags is initialized if not already done
 Flags = Flags or {}
 
--- Initialize the specific flags with default values
 Flags.CreatePiles = Flags.CreatePiles or { CurrentValue = false }
 Flags.LegitPiles = Flags.LegitPiles or { CurrentValue = false }
 
--- Auto Create Piles on Any Terrain Toggle
 local CreatePilesToggle = Tabs.Main:AddToggle("CreatePilesToggle", {
     Title = "Auto Create Piles on Any Terrain",
     Description = "",
     Default = false,
     Callback = function(Value)    
-        Flags.CreatePiles.CurrentValue = Value  -- Update the flag when the toggle is used
+        Flags.CreatePiles.CurrentValue = Value
         while Flags.CreatePiles.CurrentValue and task.wait() do    
             if Player:GetAttribute("PileCount") ~= 0 then
                 continue
@@ -846,13 +826,12 @@ local CreatePilesToggle = Tabs.Main:AddToggle("CreatePilesToggle", {
 
 
 
--- Auto Legit Create Piles Toggle (Needed for Legit Dig)
 local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
     Title = "Auto Create Piles",
     Description = "",
     Default = false,
     Callback = function(Value)    
-        Flags.LegitPiles.CurrentValue = Value  -- Update the flag when the toggle is used
+        Flags.LegitPiles.CurrentValue = Value
         while Flags.LegitPiles.CurrentValue and task.wait() do
             local Tool = Player.Character:FindFirstChildOfClass("Tool")
             
@@ -879,15 +858,14 @@ local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
 
 
 
-local Flags = Flags or {}  -- Ensure Flags is initialized
-Flags.LegitDig = Flags.LegitDig or { CurrentValue = false }  -- Initialize LegitDig flag
+local Flags = Flags or {}
+Flags.LegitDig = Flags.LegitDig or { CurrentValue = false }
 
 local Toggle = Tabs.Main:AddToggle("DigToggle", {
     Title = "Auto Fast Dig",
     Description = "",
     Default = false,
     Callback = function(Value)
-        -- Auto Fast Dig Logic
         while Value and task.wait() do
             if not Player.Character:FindFirstChildOfClass("Tool") then
                 continue
@@ -907,7 +885,6 @@ local Toggle = Tabs.Main:AddToggle("DigToggle", {
     end
 })
 
--- Auto Legit Dig Logic (100% Success Rate)
 local function LegitDig()
     if not Flags.LegitDig.CurrentValue then
         return
@@ -933,19 +910,17 @@ local function LegitDig()
     HandleConnection(Connection, "LegitDigHeartbeat")
 end
 
--- Create Legit Dig toggle
 Tabs.Main:AddToggle("LegitDigToggle", {
     Title = "Auto Dig",
     Description = "",
     Default = false,
     Callback = function(Value)
-        Flags.LegitDig.CurrentValue = Value  -- Update the flag when the toggle is used
+        Flags.LegitDig.CurrentValue = Value
         if Value then
             LegitDig()
         end
     end
 })
 
--- Trigger Legit Dig when the DigMinigame is added to the player's UI
 HandleConnection(Player.PlayerGui.Main.ChildAdded:Connect(LegitDig), "LegitDig")
 
