@@ -64,16 +64,60 @@ local RemoteEvents: {[string]: RemoteEvent} = Network:WaitForChild("RemoteEvents
 
 
 
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
-local Window = Fluent:CreateWindow({
-    Title = "NEOX HUB | Dig It | v1.2",
-    SubTitle = "by hassanxzayn",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
-    Acrylic = false,
-    Theme = "Darker",
-    MinimizeKey = Enum.KeyCode.LeftControl
+
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/hassanxzayn-lua/NEOXHUBMAIN/refs/heads/main/neoxlib')))()
+
+local Window = OrionLib:MakeWindow({Name = "NEOX ⭐ HUB | Digit v1.2", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
+
+local homeTab = Window:MakeTab({
+	Name = "| Home",
+	Icon = "rbxassetid://7733960981",
+	PremiumOnly = false
+})
+
+local mainTab = Window:MakeTab({
+	Name = "| Main",
+	Icon = "rbxassetid://7743869612",
+	PremiumOnly = false
+})
+
+local itemsTab = Window:MakeTab({
+	Name = "| Items",
+	Icon = "rbxassetid://7734056878",
+	PremiumOnly = false
+})
+
+local MiscTab = Window:MakeTab({
+	Name = "| Misc",
+	Icon = "rbxassetid://7733789088",
+	PremiumOnly = false
+})
+
+local ShopTab = Window:MakeTab({
+	Name = "| Shop",
+	Icon = "rbxassetid://7734056747",
+	PremiumOnly = false
+})
+
+
+
+local TeleportTab = Window:MakeTab({
+	Name = "| Teleport",
+	Icon = "rbxassetid://7733992789",
+	PremiumOnly = false
+})
+
+local WeatherTab = Window:MakeTab({
+	Name = "| Environment",
+	Icon = "rbxassetid://7734068495",
+	PremiumOnly = false
+})
+
+local ESPTab = Window:MakeTab({
+	Name = "| Esp",
+	Icon = "rbxassetid://7743876054",
+	PremiumOnly = false
 })
 
 
@@ -82,38 +126,24 @@ local Window = Fluent:CreateWindow({
 
 
 
-local Tabs = {
-    Home = Window:AddTab({ Title = "| Home", Icon = "rbxassetid://7733960981" }),
-    Main = Window:AddTab({ Title = "| Main", Icon = "rbxassetid://7743869612" }),
-    items = Window:AddTab({ Title = "| Items", Icon = "rbxassetid://7734056878" }),
-    Misc = Window:AddTab({ Title = "| Misc", Icon = "rbxassetid://7733789088" }),
-    Shop = Window:AddTab({ Title = "| Shop", Icon = "rbxassetid://7734056747" }),
-    Teleport = Window:AddTab({ Title = "| Teleport", Icon = "rbxassetid://7733992789" }),
-    Weather = Window:AddTab({ Title = "| Environment Settings", Icon = "rbxassetid://7734068495" }),
-    ESP = Window:AddTab({ Title = "| Esp", Icon = "rbxassetid://7743876054" }),
-}
 
-
-
-Window:SelectTab(1)
-
-
-Tabs.Home:AddButton({
-    Title = "Join our discord",
-    Description = "Click on this button to copy the invite link!",
-    Callback = function()
-        local inviteLink = "https://discord.gg/99UuEwM9sX"
-        
-        if setclipboard then
-            setclipboard(inviteLink)
-            print("bro coming to our discord yay!")
-        else
-            print("setclipboard function not available")
-        end
-    end
+homeTab:AddButton({
+	Name = "Join Our Discord!",
+	Callback = function()
+		setclipboard("https://discord.gg/99UuEwM9sX")
+		
+		OrionLib:MakeNotification({
+			Name = "Discord Link Copied!",
+			Content = "The Discord link has been copied to your clipboard.",
+			Image = "rbxassetid://6031071056", 
+			Time = 10
+		})
+	end
 })
 
 
+homeTab:AddParagraph("Join Now!!","Click on above button to copy discord invite")
+homeTab:AddParagraph("Upcoming Update","new W update is coming soon with W features")
 
 
 
@@ -129,7 +159,15 @@ Tabs.Home:AddButton({
 
 
 
-local Section = Tabs.Teleport:AddSection("Teleport To NPCS")
+
+
+
+
+
+
+local Section = TeleportTab:AddSection({
+	Name = "Teleport to NPCS"
+})
 
 
 
@@ -145,6 +183,7 @@ end
 
 local teleportLocations = {}
 local npcNames = {}
+local selectedModel = nil 
 
 local function getCharacter()
     return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -223,61 +262,40 @@ else
     print("Permafrost folder not found!")
 end
 
-local Dropdown
-if Tabs and Tabs.Teleport then
-    Dropdown = Tabs.Teleport:AddDropdown("Dropdown", { 
-        Title = "Select NPC to Teleport",
-        Description = "",
-        Values = npcNames,
-        Multi = false,
-        Default = "None",
-        Callback = function(value)
-            selectedModel = value
-            print("Selected Model:", selectedModel)
-        end
-    })
-else
-    warn("Tabs.Teleport is not initialized or accessible!")
-end
+TeleportTab:AddDropdown({
+    Name = "Select NPC to Teleport",
+    Default = "None",
+    Options = npcNames,
+    Callback = function(value)
+        selectedModel = value
+        print("Selected Model:", selectedModel)
+    end
+})
 
-local function teleportToModel()
-    if selectedModel and selectedModel ~= "None" then
-        local targetPosition = teleportLocations[selectedModel]
-        if targetPosition then
-            local character = getCharacter()
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
-                print("Teleported to " .. selectedModel)
+TeleportTab:AddButton({ 
+    Name = "Teleport", 
+    Callback = function()
+        if selectedModel and selectedModel ~= "None" then
+            local targetPosition = teleportLocations[selectedModel]
+            if targetPosition then
+                local character = getCharacter()
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
+                    print("Teleported to " .. selectedModel)
+                else
+                    warn("HumanoidRootPart not found!")
+                end
             else
-                warn("HumanoidRootPart not found!")
+                warn("No position data found for the selected model!")
             end
         else
-            warn("No position data found for the selected model!")
+            warn("No valid model selected!")
         end
-    else
-        warn("No valid model selected!")
     end
-end
+})
 
-if Tabs and Tabs.Teleport then
-    Tabs.Teleport:AddButton({ 
-        Title = "Teleport", 
-        Description = "",
-        Callback = function()
-            teleportToModel()
-        end
-    })
-else
-    warn("Tabs.Teleport is not accessible!")
-end
-
-
-
-
-
-local Toggle = Tabs.ESP:AddToggle("AllESP", {
-    Title = "NPC Esp",
-    Description = "",
+ESPTab:AddToggle({ 
+    Name = "NPC Esp",
     Default = false,
     Callback = function(state)
         local function addESP(model)
@@ -289,28 +307,27 @@ local Toggle = Tabs.ESP:AddToggle("AllESP", {
                 highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
                 highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 
+                local headPart = model:FindFirstChild("Head") or model:FindFirstChild("HumanoidRootPart")
+                if headPart then
+                    local billboardGui = Instance.new("BillboardGui")
+                    billboardGui.Parent = headPart
+                    billboardGui.Adornee = headPart
+                    billboardGui.Size = UDim2.new(40, 0, 1, 0)
+                    billboardGui.StudsOffset = Vector3.new(0, 2.5, 0)
+                    billboardGui.AlwaysOnTop = true
 
-local headPart = model:FindFirstChild("Head") or model:FindFirstChild("HumanoidRootPart")
-if headPart then
-    local billboardGui = Instance.new("BillboardGui")
-    billboardGui.Parent = headPart
-    billboardGui.Adornee = headPart
-    billboardGui.Size = UDim2.new(40, 0, 1, 0)
-    billboardGui.StudsOffset = Vector3.new(0, 2.5, 0)
-    billboardGui.AlwaysOnTop = true
-
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Parent = billboardGui
-    textLabel.Size = UDim2.new(1, 0, 2, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.Text = model.Name
-    textLabel.TextColor3 = Color3.fromRGB(255, 0, 0) 
-    textLabel.TextStrokeTransparency = 0
-    textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    textLabel.Font = Enum.Font.GothamBold
-    textLabel.TextScaled = true 
-    textLabel.TextSize = 80 
-end
+                    local textLabel = Instance.new("TextLabel")
+                    textLabel.Parent = billboardGui
+                    textLabel.Size = UDim2.new(1, 0, 2, 0)
+                    textLabel.BackgroundTransparency = 1
+                    textLabel.Text = model.Name
+                    textLabel.TextColor3 = Color3.fromRGB(255, 0, 0) 
+                    textLabel.TextStrokeTransparency = 0
+                    textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                    textLabel.Font = Enum.Font.GothamBold
+                    textLabel.TextScaled = true 
+                    textLabel.TextSize = 80 
+                end
             end
         end
 
@@ -402,22 +419,17 @@ end
             print("Lunar New Year folder not found!")
         end
 
-
-                local permafrost = mapFolder:FindFirstChild("Permafrost")
-                if permafrost then
-                    print("Permafrost folder found")
-                    processModels(permafrost, {"WomenElf", "Hobo Santa", "ElfMerchant", "Ice King", "Ice King", "Frank", "Rick", "ShipElf"}) 
-                else
-                    print("Permafrost folder not found!")
-                end
-
+        local permafrost = mapFolder:FindFirstChild("Permafrost")
+        if permafrost then
+            print("Permafrost folder found")
+            processModels(permafrost, {"WomenElf", "Hobo Santa", "ElfMerchant", "Ice King", "Ice King", "Frank", "Rick", "ShipElf"}) 
+        else
+            print("Permafrost folder not found!")
+        end
 
         print(state and "ESP Enabled for all models" or "ESP Disabled for all models")
-    end
+    end    
 })
-
-
-
 
 
 
@@ -426,10 +438,8 @@ local RunService = game:GetService("RunService")
 
 local DayOnlyLoop
 
-local DayToggle = Tabs.Weather:AddToggle("Only Day",  
-{
-    Title = "Only Day",  
-    Description = "", 
+WeatherTab:AddToggle({
+    Name = "Only Day",
     Default = false,
     Callback = function(Value)
         if Value then
@@ -442,16 +452,13 @@ local DayToggle = Tabs.Weather:AddToggle("Only Day",
                 DayOnlyLoop = nil
             end
         end
-    end
+    end    
 })
-
 
 local NightOnlyLoop
 
-local NightToggle = Tabs.Weather:AddToggle("Only Night",  
-{
-    Title = "Only Night",  
-    Description = "", 
+WeatherTab:AddToggle({
+    Name = "Only Night",
     Default = false,
     Callback = function(Value)
         if Value then
@@ -464,16 +471,15 @@ local NightToggle = Tabs.Weather:AddToggle("Only Night",
                 NightOnlyLoop = nil
             end
         end
-    end
+    end    
 })
 
 
 
 
-local removefogToggle = Tabs.Weather:AddToggle("Remove Fog",  
-{
-    Title = "Remove Fog",  
-    Description = "",  
+
+WeatherTab:AddToggle({
+    Name = "Remove Fog",
     Default = false,
     Callback = function(Value)
         if Value then
@@ -487,18 +493,12 @@ local removefogToggle = Tabs.Weather:AddToggle("Remove Fog",
                 skyInBloom.Parent = game:GetService("Lighting")
             end
         end
-    end
+    end    
 })
 
 
-
-
-
-
-
-Tabs.items:AddButton({
-    Title = "Redeem Known Codes",
-    Description = "",
+itemsTab:AddButton({ 
+    Name = "Redeem Known Codes",
     Callback = function()
         local Codes = {
             "PLSMOLE",
@@ -520,36 +520,30 @@ Tabs.items:AddButton({
             if Result.Status then
                 continue
             elseif Result.AlreadyRedeemed then
-                Fluent:Notify({
-                    Title = "NEOX HUB",
-                    Content = "Failed",
-                    SubContent = "The code '" .. Code .. "' has already been redeemed",
-                    Duration = 5
+                OrionLib:MakeNotification({
+                    Name = "NEOX HUB",
+                    Content = "The code '" .. Code .. "' has already been redeemed",
+                    Image = "rbxassetid://7733911828",
+                    Time = 5
                 })
             elseif Result.NotValid then
-                Fluent:Notify({
-                    Title = "NEOX HUB",
-                    Content = "Failed",
-                    SubContent = "The code '" .. Code .. "' is not valid anymore.",
-                    Duration = 5
+                OrionLib:MakeNotification({
+                    Name = "NEOX HUB",
+                    Content = "The code '" .. Code .. "' is not valid anymore.",
+                    Image = "rbxassetid://7733911828",
+                    Time = 5
                 })
             else
-                Fluent:Notify({
-                    Title = "NEOX HUB",
-                    Content = "Failed",
-                    SubContent = "The code '" .. Code .. "' has had an internal error while redeeming.",
-                    Duration = 5
+                OrionLib:MakeNotification({
+                    Name = "NEOX HUB",
+                    Content = "The code '" .. Code .. "' had an internal error while redeeming.",
+                    Image = "rbxassetid://7733911828",
+                    Time = 5
                 })
             end
         end
-    end,
+    end    
 })
-
-
-
-
-
-
 
 
 local Treasures = ReplicatedStorage.Settings.Items.Treasures
@@ -602,11 +596,9 @@ local function OpenContainer(Tool: Tool)
 	})
 end
 
-local Toggle = Tabs.items:AddToggle("AutoOpenContainers", {
-	Title = "Auto Open Containers",
-	Description = "",
+itemsTab:AddToggle({
+	Name = "Auto Open Containers",
 	Default = false,
-	Flag = "OpenContainers", 
 	Callback = function(Value)
 		Flags.OpenContainers = Value
 
@@ -626,9 +618,8 @@ local Toggle = Tabs.items:AddToggle("AutoOpenContainers", {
 
 
 
-Tabs.items:AddButton({ 
-    Title = "Get Mole Count",
-    Description = "",
+itemsTab:AddButton({
+    Name = "Get Mole Count",
     Callback = function()
         local Moles = 0
         local RoyalMoles = 0
@@ -653,21 +644,20 @@ Tabs.items:AddButton({
             end
         end
 
-        Fluent:Notify({
-            Title = "Total Moles",
+        OrionLib:MakeNotification({
+            Name = "Total Moles", 
             Content = `You have {Moles} Moles and {RoyalMoles} Royal Moles`,
-            Duration = 5
+            Image = "rbxassetid://7734068321",
+            Time = 5
         })
-    end,
+    end    
 })
 
 
 
-
-
-
-
-local Section = Tabs.Teleport:AddSection("Teleport To Islands")
+local Section = TeleportTab:AddSection({
+	Name = "Teleport to Islands"
+})
 
 
 local Islands = {}
@@ -688,12 +678,10 @@ end
 
 table.sort(Islands)
 
-local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
-    Title = "Teleport to Island",
-    Description = "",
-    Values = Islands,
-    Multi = false,
+TeleportTab:AddDropdown({
+    Name = "Teleport to Island",
     Default = nil,
+    Options = Islands,
     Callback = function(CurrentOption)
         if CurrentOption == "" then
             return
@@ -702,12 +690,13 @@ local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
         local Island = workspace.Map.Islands:FindFirstChild(CurrentOption)
 
         if not Island then
-            return Fluent:Notify({
-                Title = "Neox Hub",
-                Content = "Error",
-                SubContent = "That island doesn't currently exist", 
-                Duration = 5 
-        })
+            OrionLib:MakeNotification({
+                Name = "Error", 
+                Content = "That island doesn't currently exist", 
+                Image = "rbxassetid://7734068321",
+                Time = 5
+            })
+            return
         end
 
         if Island:FindFirstChild("LocationSpawn") then
@@ -722,95 +711,81 @@ local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
     end
 })
 
+itemsTab:AddButton({ 
+    Name = "Quick Sell Inventory", 
+    Callback = function()
+        local Flags = {
+            Sell = {
+                CurrentValue = true 
+            }
+        }
 
+        local function GetInventorySize()
+            local Inventory: {[string]: {["Attributes"]: {["Weight"]: number}}} = RemoteFunctions.Player:InvokeServer({
+                Command = "GetInventory"
+            })
 
+            local InventorySize = 0
 
+            for ID, Object in Inventory do
+                InventorySize += 1
+            end
 
-
-
-
-
-
-
-
-
-
-
-local Flags = {
-    Sell = {
-        CurrentValue = true 
-    }
-}
-
-local function GetInventorySize()
-    local Inventory: {[string]: {["Attributes"]: {["Weight"]: number}}} = RemoteFunctions.Player:InvokeServer({
-        Command = "GetInventory"
-    })
-
-    local InventorySize = 0
-
-    for ID, Object in Inventory do
-        InventorySize += 1
-    end
-
-    return InventorySize
-end
-
-local function SellInventory()
-    Player.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-    
-    local Merchant: Model
-    for _, v: TextLabel in workspace.Map.Islands:GetDescendants() do
-        if v.Name ~= "Title" or not v:IsA("TextLabel") or v.Text ~= "Merchant" then
-            continue
+            return InventorySize
         end
-        Merchant = v.Parent.Parent
-        break
-    end
 
-    if not Merchant then
-        warn("No merchant found in the map.")
-        return
-    end
+        local function SellInventory()
+            Player.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
 
-    local SellEnabled = Flags.Sell.CurrentValue
-    local PreviousPosition = Player.Character:GetPivot()
-    local PreviousSize = GetInventorySize()
+            local Merchant: Model
+            for _, v: TextLabel in workspace.Map.Islands:GetDescendants() do
+                if v.Name ~= "Title" or not v:IsA("TextLabel") or v.Text ~= "Merchant" then
+                    continue
+                end
+                Merchant = v.Parent.Parent
+                break
+            end
 
-    local Teleported = false
-    local StartTime = tick()
+            if not Merchant then
+                warn("No merchant found in the map.")
+                return
+            end
 
-    repeat
-        Player.Character:PivotTo(Merchant:GetPivot())
+            local SellEnabled = Flags.Sell.CurrentValue
+            local PreviousPosition = Player.Character:GetPivot()
+            local PreviousSize = GetInventorySize()
 
-        RemoteEvents.Merchant:FireServer({
-            Command = "SellAllTreasures",
-            Merchant = Merchant
-        })
+            local Teleported = false
+            local StartTime = tick()
 
-        task.wait(0.1)
-        Teleported = true
-    until GetInventorySize() ~= PreviousSize or Flags.Sell.CurrentValue ~= SellEnabled or tick() - StartTime >= 3
+            repeat
+                Player.Character:PivotTo(Merchant:GetPivot())
 
-    if Teleported then
-        Player.Character:PivotTo(PreviousPosition)
-    end
-end
+                RemoteEvents.Merchant:FireServer({
+                    Command = "SellAllTreasures",
+                    Merchant = Merchant
+                })
 
-Tabs.items:AddButton({
-    Title = "Quick Sell Inventory",
-    Description = "",
-    Callback = SellInventory
+                task.wait(0.1)
+                Teleported = true
+            until GetInventorySize() ~= PreviousSize or Flags.Sell.CurrentValue ~= SellEnabled or tick() - StartTime >= 3
+
+            if Teleported then
+                Player.Character:PivotTo(PreviousPosition)
+            end
+        end
+
+        SellInventory()
+    end    
 })
 
 
 
 local Flags = Flags or {}  
-Flags.Sell = Flags.Sell or { CurrentValue = false } 
+Flags.Sell = Flags.Sell or { CurrentValue = false }
 
-local Toggle = Tabs.items:AddToggle("MyToggle", {
-    Title = "Auto Sell Inventory (When Backpack Full)",
-    Description = "",
+itemsTab:AddToggle({
+    Name = "Auto Sell Inventory (When Backpack Full)",
     Default = false,
     Callback = function(Value)
         Flags.Sell.CurrentValue = Value
@@ -831,10 +806,10 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
 
         local function SellInventory()
             Player.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-            
+
             local Merchant: Model
 
-            for _,v: TextLabel in workspace.Map.Islands:GetDescendants() do
+            for _, v: TextLabel in workspace.Map.Islands:GetDescendants() do
                 if v.Name ~= "Title" or not v:IsA("TextLabel") or v.Text ~= "Merchant" then
                     continue
                 end
@@ -842,15 +817,14 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
                 Merchant = v.Parent.Parent
                 break
             end
-            
+
             local SellEnabled = Flags.Sell.CurrentValue
             local PreviousPosition = Player.Character:GetPivot()
             local PreviousSize = GetInventorySize()
-            
+
             local Teleported = false
-            
             local StartTime = tick()
-            
+
             repeat
                 Player.Character:PivotTo(Merchant:GetPivot())
 
@@ -862,7 +836,7 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
                 task.wait(0.1)
                 Teleported = true
             until GetInventorySize() ~= PreviousSize or Flags.Sell.CurrentValue ~= SellEnabled or tick() - StartTime >= 3
-            
+
             if Teleported then
                 Player.Character:PivotTo(PreviousPosition)
             end
@@ -880,58 +854,51 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
 })
 
 
+local Section = ShopTab:AddSection({
+	Name = "Magnets"
+})
 
 
 
+local magnetBoxAmount = 1
 
-
-
-
-
-
-local Section = Tabs.Shop:AddSection("Magnets")
-
-
-local magnetBoxAmount = 1 
-
-local Slider = Tabs.Shop:AddSlider("Slider",  
-{
-    Title = "Amount of Magnet Boxes",
-    Description = "",
-    Default = magnetBoxAmount,
+ShopTab:AddSlider({
+    Name = "Amount of Magnet Boxes",
     Min = 1,
     Max = 100,
-    Rounding = 0,  
+    Default = magnetBoxAmount,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    ValueName = "boxes",
     Callback = function(value)
         magnetBoxAmount = value
     end
 })
 
-Tabs.Shop:AddButton({ 
-    Title = "Purchase Magnet Box(es)", 
-    Description = "", 
+ShopTab:AddButton({
+    Name = "Purchase Magnet Boxes",
     Callback = function()
         RemoteFunctions.Shop:InvokeServer({
             Command = "Buy",
             Type = "Item",
             Product = "Magnet Box",
-            Amount = magnetBoxAmount 
+            Amount = magnetBoxAmount
         })
     end
 })
 
-local Section = Tabs.Shop:AddSection("Shovel")
+local Section = ShopTab:AddSection({
+	Name = "Shovel"
+})
 
 
-local Dropdown = Tabs.Shop:AddDropdown("Purchase Shovel", { 
-    Title = "Purchase Shovel",
-    Description = "",
-    Values = Shovels, 
-    Multi = false, 
-    Default = nil, 
+ShopTab:AddDropdown({
+    Name = "Purchase Shovel",
+    Default = nil,
+    Options = Shovels,
     Callback = function(CurrentOption)
         if not CurrentOption or CurrentOption == "" then
-            return 
+            return
         end
 
         RemoteFunctions.Shop:InvokeServer({
@@ -940,26 +907,11 @@ local Dropdown = Tabs.Shop:AddDropdown("Purchase Shovel", {
             Product = OriginalShovelNames[CurrentOption].Name,
             Amount = 1
         })
-
-
-    end,
+    end    
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-Tabs.items:AddButton({
-    Title = `Quick Appraise Held Item`,
-    Description = "",
+itemsTab:AddButton({
+    Name = "Quick Appraise Held Item",
     Callback = function()
         RemoteFunctions.LootPit:InvokeServer({
             Command = "AppraiseItem"
@@ -974,9 +926,8 @@ local Flags = {
     Salary = { CurrentValue = false }
 }
 
-local Toggle = Tabs.items:AddToggle("MyToggle", {
-    Title = "Auto Collect Salary Rewards",
-    Description = "It Will Appear As Unclaimed",
+itemsTab:AddToggle({ 
+    Name = "Auto Collect Salary Rewards",
     Default = false,
     Callback = function(Value)
         Flags.Salary.CurrentValue = Value
@@ -1006,19 +957,14 @@ local Toggle = Tabs.items:AddToggle("MyToggle", {
 
             task.wait(5)
         end
-    end
+    end    
 })
-
-
-
 
 
 local HideGui = false  
 
-local Toggle = Tabs.Misc:AddToggle("MyToggle",  
-{
-    Title = "Hide/Show UIs", 
-    Description = "",
+local Toggle = MiscTab:AddToggle({
+    Name = "Hide/Show UIs",  
     Default = false,  
     Callback = function(newState)
         HideGui = newState  
@@ -1028,7 +974,7 @@ local Toggle = Tabs.Misc:AddToggle("MyToggle",
                 gui.Enabled = not HideGui 
             end
         end
-    end
+    end    
 })
 
 for _, gui in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
@@ -1037,23 +983,8 @@ for _, gui in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
     end
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-local Toggle = Tabs.Misc:AddToggle("MyToggle", 
-{
-    Title = "Freeze Character", 
-    Description = "",
+MiscTab:AddToggle({
+    Name = "Freeze Character",
     Default = false,
     Callback = function(state)
         local player = game:GetService("Players").LocalPlayer
@@ -1072,22 +1003,15 @@ local Toggle = Tabs.Misc:AddToggle("MyToggle",
 })
 
 
-
-Tabs.Misc:AddButton({
-    Title = "Anti AFK",
-    Description = "",
-    Callback = function()
+MiscTab:AddButton({ 
+	Name = "AntiAFK",
+	Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/hassanxzayn-lua/Anti-afk/main/antiafkbyhassanxzyn"))();
-	end
+  	end    
 })
 
-
-
-
-local DisableSwimmingToggle = Tabs.Misc:AddToggle("DisableSwimmingToggle", 
-{
-    Title = "Disable Swimming", 
-    Description = "",
+MiscTab:AddToggle({
+    Name = "Disable Swimming",
     Default = false,
     Callback = function(state)
         local LocalPlayer = game.Players.LocalPlayer
@@ -1109,9 +1033,6 @@ local DisableSwimmingToggle = Tabs.Misc:AddToggle("DisableSwimmingToggle",
         end
     end
 })
-
-
-
 
 
 local BlackGui = Instance.new("ScreenGui")
@@ -1136,47 +1057,46 @@ whiteFrame.BackgroundTransparency = 1
 whiteFrame.Parent = WhiteGui
 WhiteGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-local BlackGui5 = Tabs.Misc:AddToggle("BlackGui5", {Title = "Black Screen", Default = false })
-BlackGui5:OnChanged(function()
-    local Black123 = BlackGui5.Value
-    if Black123 then
-        blackFrame.BackgroundTransparency = 0
-    else
-        blackFrame.BackgroundTransparency = 1
-    end
-end)
+MiscTab:AddToggle({ 
+    Name = "Black Screen", 
+    Default = false, 
+    Callback = function(toggleState)
+        if toggleState then
+            blackFrame.BackgroundTransparency = 0
+        else
+            blackFrame.BackgroundTransparency = 1
+        end
+    end    
+})
 
-local WhiteGui5 = Tabs.Misc:AddToggle("WhiteGui5", {Title = "White Screen", Default = false })
-WhiteGui5:OnChanged(function()
-    local White123 = WhiteGui5.Value
-    if White123 then
-        whiteFrame.BackgroundTransparency = 0 
-    else
-        whiteFrame.BackgroundTransparency = 1
-    end
-end)
-
-
-Tabs.Misc:AddButton({
-    Title = "Infiniteyield Reborn",
-    Description = "",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RyXeleron/infiniteyield-reborn/refs/heads/scriptblox/source"))()
-    end
+MiscTab:AddToggle({ 
+    Name = "White Screen", 
+    Default = false, 
+    Callback = function(toggleState)
+        if toggleState then
+            whiteFrame.BackgroundTransparency = 0
+        else
+            whiteFrame.BackgroundTransparency = 1
+        end
+    end    
 })
 
 
+MiscTab:AddButton({ 
+	Name = "Infiniteyield Reborn",
+	Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RyXeleron/infiniteyield-reborn/refs/heads/scriptblox/source"))()
+  	end    
+})
 
 
-local Section = Tabs.Misc:AddSection("Character")
+local Section = MiscTab:AddSection({
+	Name = "Character"
+})
 
-
-
-local TeleportToggle = Tabs.Misc:AddToggle("TeleportToggle", 
-{
-    Title = "T + Left Click Teleport", 
-    Description = "",
-    Default = false,
+MiscTab:AddToggle({ 
+    Name = "T + Left Click Teleport", 
+    Default = false, 
     Callback = function(Value)
         if not hasUserToggled and not isTeleportEnabled then
             hasUserToggled = true
@@ -1203,18 +1123,15 @@ local TeleportToggle = Tabs.Misc:AddToggle("TeleportToggle",
                 connection = nil
             end
         end
-    end
+    end    
 })
 
-
-local InfiniteJumpToggle = Tabs.Misc:AddToggle("InfiniteJumpToggle", 
-{
-    Title = "Infinite Jumps", 
-    Description = "",
-    Default = false,
+MiscTab:AddToggle({ 
+    Name = "Infinite Jumps", 
+    Default = false, 
     Callback = function(Value)
         _G.infinjump = Value
-    end
+    end    
 })
 
 if not _G.infinJumpStarted then
@@ -1238,93 +1155,87 @@ if not _G.infinJumpStarted then
     end)
 end
 
-
-
 local Noclip = nil
 local Clip = true
 
 function noclip()
-	Clip = false
-	local function Nocl()
-		if Clip == false and game.Players.LocalPlayer.Character ~= nil then
-			for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-				if v:IsA('BasePart') and v.CanCollide and v.Name ~= floatName then
-					v.CanCollide = false
-				end
-			end
-		end
-		wait(0.21)
-	end
-	Noclip = game:GetService('RunService').Stepped:Connect(Nocl)
+    Clip = false
+    local function Nocl()
+        if Clip == false and game.Players.LocalPlayer.Character ~= nil then
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if v:IsA('BasePart') and v.CanCollide and v.Name ~= floatName then
+                    v.CanCollide = false
+                end
+            end
+        end
+        wait(0.21)
+    end
+    Noclip = game:GetService('RunService').Stepped:Connect(Nocl)
 end
 
 function clip()
-	if Noclip then 
-		Noclip:Disconnect()
-	end
-	Clip = true
-	if game.Players.LocalPlayer.Character then
-		for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-			if v:IsA('BasePart') and v.CanCollide == false then
-				v.CanCollide = true
-			end
-		end
-	end
+    if Noclip then 
+        Noclip:Disconnect()
+    end
+    Clip = true
+    if game.Players.LocalPlayer.Character then
+        for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v:IsA('BasePart') and v.CanCollide == false then
+                v.CanCollide = true
+            end
+        end
+    end
 end
 
-local Toggle = Tabs.Misc:AddToggle("MyToggle", {
-    Title = "Noclip",
-    Description = "",
-    Default = false,
+MiscTab:AddToggle({ 
+    Name = "Noclip", 
+    Default = false, 
     Callback = function(state)
         if state then
             noclip()
         else
             clip()
         end
-    end
+    end    
 })
 
-
-
-
-local Slider = Tabs.Misc:AddSlider("SpeedSlider", 
-{
-    Title = "WalkSpeed",
-    Description = "",
-    Default = 16,
+MiscTab:AddSlider({
+    Name = "WalkSpeed",
     Min = 16,
     Max = 500,
-    Rounding = 1,
+    Default = 16,
+    Color = Color3.fromRGB(0, 255, 0),
+    Increment = 1,
+    ValueName = "WalkSpeed",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
     end
 })
 
-local Slider = Tabs.Misc:AddSlider("JumpSlider", 
-{
-    Title = "Jump Power",
-    Description = "",
-    Default = 50,
+MiscTab:AddSlider({
+    Name = "JumpPower",
     Min = 50,
     Max = 500,
-    Rounding = 1,
+    Default = 50,
+    Color = Color3.fromRGB(0, 255, 0),
+    Increment = 1,
+    ValueName = "JumpPower",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
     end
 })
 
 local runService = game:GetService("RunService")
 local event
 
-local Slider = Tabs.Misc:AddSlider("GravitySlider", 
-{
-    Title = "Gravity",
-    Description = "",
-    Default = 196,
+MiscTab:AddSlider({
+    Name = "Gravity",
     Min = 0,
     Max = 500,
-    Rounding = 1,
+    Default = 196,
+    Color = Color3.fromRGB(0, 255, 0),
+    Increment = 1,
+    ValueName = "Gravity",
     Callback = function(Value)
         print("Gravity slider changed to:", Value)
         if event then
@@ -1336,33 +1247,23 @@ local Slider = Tabs.Misc:AddSlider("GravitySlider",
     end
 })
 
-
-
-
-
-local Slider = Tabs.Misc:AddSlider("AssSlider", 
-{
-    Title = "HipHeight",
-    Description = "",
-    Default = 0,
+MiscTab:AddSlider({
+    Name = "HipHeight",
     Min = 0,
     Max = 500,
-    Rounding = 1,
+    Default = 0,
+    Color = Color3.fromRGB(0, 255, 0),
+    Increment = 1,
+    ValueName = "HipHeight",
     Callback = function(Value)
         game.Players.LocalPlayer.Character.Humanoid.HipHeight = Value
     end
 })
 
-
-
-local Input = Tabs.Misc:AddInput("FOVInput", 
-{
-    Title = "Change FOV",
-    Description = "",
+MiscTab:AddTextbox({
+    Name = "Change FOV",
     Default = "70",
-    Placeholder = "Enter FOV value",
-    Numeric = true,
-    Finished = true,
+    TextDisappear = true,
     Callback = function(Value)
         local fov = tonumber(Value)
         if fov then
@@ -1377,41 +1278,44 @@ local Input = Tabs.Misc:AddInput("FOVInput",
 
 
 
+local Section = mainTab:AddSection({
+	Name = "Teleport to position"
+})
+
 
 local selectedPosition = nil
 local teleporting = false
 
-local positionParagraph = Tabs.Main:AddParagraph({
-    Title = "Position :",
-    Content = ""
-})
-
-Tabs.Main:AddButton({
-    Title = "Select Position",
-    Description = "",
+mainTab:AddButton({
+    Name = "Select Position",
     Callback = function()
         local player = game.Players.LocalPlayer
-        if not player then return end
+        if not player then
+            print("No player found.")
+            return
+        end
 
         local character = player.Character or player.CharacterAdded:Wait()
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
-        if humanoidRootPart then
-            local position = humanoidRootPart.Position
-            selectedPosition = CFrame.new(position) * humanoidRootPart.CFrame.Rotation
-            positionParagraph:SetTitle("Position : " .. 
-                tostring(math.floor(position.X)) .. " X " ..
-                tostring(math.floor(position.Y)) .. " Y " ..
-                tostring(math.floor(position.Z)) .. " Z")
-        else
-            positionParagraph:SetTitle("Error: Unable to find player position.")
+        if not character then
+            print("No character found.")
+            return
         end
+
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+        if not humanoidRootPart then
+            print("HumanoidRootPart not found.")
+            return
+        end
+
+        print("Player position: " .. tostring(humanoidRootPart.Position))
+
+        local position = humanoidRootPart.Position
+        selectedPosition = CFrame.new(position) * humanoidRootPart.CFrame.Rotation
     end
 })
 
-Tabs.Main:AddToggle("MyToggle", {
-    Title = "Teleport to selected location",
-    Description = "",
+mainTab:AddToggle({
+    Name = "Teleport to selected location",
     Default = false,
     Callback = function(state)
         if state then
@@ -1434,19 +1338,19 @@ Tabs.Main:AddToggle("MyToggle", {
     end
 })
 
+local Section = mainTab:AddSection({
+	Name = "Digging"
+})
 
 
-
-
-
-Flags = Flags or {}
+local Flags = Flags or {}
 
 Flags.CreatePiles = Flags.CreatePiles or { CurrentValue = false }
 Flags.LegitPiles = Flags.LegitPiles or { CurrentValue = false }
+Flags.LegitDig = Flags.LegitDig or { CurrentValue = false }
 
-local CreatePilesToggle = Tabs.Main:AddToggle("CreatePilesToggle", {
-    Title = "Auto Create Piles on Any Terrain",
-    Description = "",
+mainTab:AddToggle({
+    Name = "Auto Create Piles on Any Terrain",
     Default = false,
     Callback = function(Value)    
         Flags.CreatePiles.CurrentValue = Value 
@@ -1468,14 +1372,8 @@ local CreatePilesToggle = Tabs.Main:AddToggle("CreatePilesToggle", {
     end
 })
 
-
-
-
-
-
-local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
-    Title = "Auto Legit Create Piles",
-    Description = "Works with Legit Dig",
+mainTab:AddToggle({
+    Name = "Auto Legit Create Piles (Works with Legit Dig)",
     Default = false,
     Callback = function(Value)    
         Flags.LegitPiles.CurrentValue = Value 
@@ -1503,17 +1401,8 @@ local LegitPilesToggle = Tabs.Main:AddToggle("LegitPilesToggle", {
 
 
 
-
-
-
-
-
-local Flags = Flags or {}  
-Flags.LegitDig = Flags.LegitDig or { CurrentValue = false } 
-
-local Toggle = Tabs.Main:AddToggle("DigToggle", {
-    Title = "Auto Fast Dig",
-    Description = "",
+mainTab:AddToggle({
+    Name = "Auto Fast Dig",
     Default = false,
     Callback = function(Value)
         while Value and task.wait() do
@@ -1560,12 +1449,8 @@ local function LegitDig()
     HandleConnection(Connection, "LegitDigHeartbeat")
 end
 
-
-
-
-Tabs.Main:AddToggle("LegitDigToggle", {
-    Title = "Auto Legit Dig",
-    Description = "",
+mainTab:AddToggle({
+    Name = "Auto Legit Dig",
     Default = false,
     Callback = function(Value)
         Flags.LegitDig.CurrentValue = Value  
@@ -1574,8 +1459,5 @@ Tabs.Main:AddToggle("LegitDigToggle", {
         end
     end
 })
-
-
-
 
 HandleConnection(Player.PlayerGui.Main.ChildAdded:Connect(LegitDig), "LegitDig")
