@@ -102,9 +102,16 @@ local ShopTab = Window:MakeTab({
 
 
 
+
 local TeleportTab = Window:MakeTab({
 	Name = "| Teleport",
 	Icon = "rbxassetid://7733992789",
+	PremiumOnly = false
+})
+
+local EventTab = Window:MakeTab({
+	Name = "| Event",
+	Icon = "rbxassetid://7734068321",
 	PremiumOnly = false
 })
 
@@ -154,6 +161,161 @@ homeTab:AddParagraph("Upcoming Update","new W update is coming soon with W featu
 
 
 
+
+
+
+
+
+
+
+local Player = game.Players.LocalPlayer
+local Flags = {}  
+Flags.Meteor = { CurrentValue = true } 
+Flags.LunarClouds = { CurrentValue = true }
+
+local PreviousLocation
+
+local function MeteorIslandTeleport(Meteor: Model?)
+    if Meteor.Name ~= "Meteor Island" or not Flags.Meteor.CurrentValue then
+        return
+    end
+
+    local Character = Player.Character
+    if not Character then return end
+
+    PreviousLocation = Character:GetPivot()
+
+    Character:PivotTo(Meteor:GetPivot() + Vector3.yAxis * Meteor:GetExtentsSize().Y / 2)
+end
+
+EventTab:AddToggle({
+    Name = "Auto Teleport to Meteor Islands",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            for _, v in ipairs(workspace.Map.Temporary:GetChildren()) do
+                MeteorIslandTeleport(v)
+            end
+        elseif PreviousLocation then
+            Player.Character:PivotTo(PreviousLocation)
+            PreviousLocation = nil
+        end
+    end
+})
+
+workspace.Map.Temporary.ChildAdded:Connect(function(Meteor)
+    MeteorIslandTeleport(Meteor)
+end)
+
+workspace.Map.Temporary.ChildRemoved:Connect(function(Child: Model?)
+    if Child.Name == "Meteor Island" and PreviousLocation and Flags.Meteor.CurrentValue then
+        Player.Character:PivotTo(PreviousLocation)
+        PreviousLocation = nil
+    end
+end)
+
+local function LunarCloudsTeleport(Lunar: Model?)
+    if Lunar.Name ~= "Lunar Clouds" or not Flags.LunarClouds.CurrentValue then
+        return
+    end
+
+    local Character = Player.Character
+    if not Character then return end
+
+    PreviousLocation = Character:GetPivot()
+
+    if Lunar:FindFirstChild("SpawnPoint") then
+        Character:PivotTo(Lunar.SpawnPoint.CFrame)
+    end
+end
+
+EventTab:AddToggle({
+    Name = "Auto Teleport to Lunar Clouds",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            for _, v in ipairs(workspace.Map.Islands:GetChildren()) do
+                LunarCloudsTeleport(v)
+            end
+        elseif PreviousLocation then
+            Player.Character:PivotTo(PreviousLocation)
+            PreviousLocation = nil
+        end
+    end
+})
+
+workspace.Map.Islands.ChildAdded:Connect(function(Lunar)
+    LunarCloudsTeleport(Lunar)
+end)
+
+workspace.Map.Islands.ChildRemoved:Connect(function(Child: Model)
+    if Child.Name == "Lunar Clouds" and PreviousLocation and Flags.LunarClouds.CurrentValue then
+        Player.Character:PivotTo(PreviousLocation)
+        PreviousLocation = nil
+    end
+end)
+
+
+
+
+
+local StaffRoleNames = {
+	"mod",
+	"dev",
+	"admin",
+	"owner",
+	"founder",
+	"manag",
+}
+
+local function CheckIfStaff(CheckPlayer)
+	local StaffRole
+	
+	if CheckPlayer:IsInGroup(1200769) then
+		StaffRole = "Roblox Admin"
+	end
+	
+	if game.CreatorType == Enum.CreatorType.Group then
+		local CreatorId = game.CreatorId
+		local Role = CheckPlayer:GetRoleInGroup(CreatorId)
+		
+		for _, Name in ipairs(StaffRoleNames) do
+			if Role:lower():find(Name) then
+				StaffRole = Role
+				break
+			end
+		end
+		
+		if CheckPlayer:GetRankInGroup(CreatorId) == 255 then
+			StaffRole = "Group Owner"
+		end
+	end
+	
+	if StaffRole then
+		game.Players.LocalPlayer:Kick(
+			string.format(
+				"The player '%s' was detected to be a staff member, their role is '%s'.\n\nIf you believe this is false, contact the NEOX HUN",
+				CheckPlayer.Name, StaffRole
+			)
+		)
+	end
+end
+
+itemsTab:AddToggle({
+	Name = "Auto Leave When Staff Joins",
+	Default = false,
+	Callback = function(Value)
+		if Value then
+			-- Check all current players
+			for _, CheckPlayer in ipairs(game.Players:GetPlayers()) do
+				CheckIfStaff(CheckPlayer)
+			end
+			
+			-- Listen for new players joining
+			game.Players.PlayerAdded:Connect(CheckIfStaff)
+		end
+	end
+})
 
 
 
@@ -546,6 +708,9 @@ itemsTab:AddButton({
 })
 
 
+
+
+
 local Treasures = ReplicatedStorage.Settings.Items.Treasures
 
 local ContainerNames = {
@@ -909,6 +1074,18 @@ ShopTab:AddDropdown({
         })
     end    
 })
+
+
+
+
+
+
+
+
+
+
+
+
 
 itemsTab:AddButton({
     Name = "Quick Appraise Held Item",
