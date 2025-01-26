@@ -1463,27 +1463,31 @@ local Section = mainTab:AddSection({
 local selectedPosition = nil
 local teleporting = false
 
-local positionLabel = mainTab:AddLabel("Position : Not Selected")
-
 mainTab:AddButton({
     Name = "Select Position",
     Callback = function()
         local player = game.Players.LocalPlayer
-        if not player then return end
+        if not player then
+            print("No player found.")
+            return
+        end
 
         local character = player.Character or player.CharacterAdded:Wait()
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
-        if humanoidRootPart then
-            local position = humanoidRootPart.Position
-            selectedPosition = CFrame.new(position) * humanoidRootPart.CFrame.Rotation
-
-            positionLabel:Set("Position : " .. tostring(math.floor(position.X)) .. " X " ..
-                tostring(math.floor(position.Y)) .. " Y " ..
-                tostring(math.floor(position.Z)) .. " Z")
-        else
-            positionLabel:Set("Error: Unable to find player position.")
+        if not character then
+            print("No character found.")
+            return
         end
+
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+        if not humanoidRootPart then
+            print("HumanoidRootPart not found.")
+            return
+        end
+
+        print("Player position: " .. tostring(humanoidRootPart.Position))
+
+        local position = humanoidRootPart.Position
+        selectedPosition = CFrame.new(position) * humanoidRootPart.CFrame.Rotation
     end
 })
 
@@ -1510,7 +1514,6 @@ mainTab:AddToggle({
         end
     end
 })
-
 
 local Section = mainTab:AddSection({
 	Name = "Digging"
@@ -1635,3 +1638,6 @@ mainTab:AddToggle({
 })
 
 HandleConnection(Player.PlayerGui.Main.ChildAdded:Connect(LegitDig), "LegitDig")
+
+
+
