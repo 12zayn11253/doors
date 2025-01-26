@@ -68,7 +68,12 @@ local RemoteEvents: {[string]: RemoteEvent} = Network:WaitForChild("RemoteEvents
 
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/hassanxzayn-lua/NEOXHUBMAIN/refs/heads/main/neoxlib')))()
 
-local Window = OrionLib:MakeWindow({Name = "NEOX ⭐ HUB | Digit v1.2", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
+
+
+
+
+
+local Window = OrionLib:MakeWindow({Name = "NEOX ⭐ HUB | Digit v1.3", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
 
 local homeTab = Window:MakeTab({
 	Name = "| Home",
@@ -102,10 +107,15 @@ local ShopTab = Window:MakeTab({
 
 
 
-
 local TeleportTab = Window:MakeTab({
 	Name = "| Teleport",
 	Icon = "rbxassetid://7733992789",
+	PremiumOnly = false
+})
+
+local SpotsTab = Window:MakeTab({
+	Name = "| Spots",
+	Icon = "rbxassetid://7733692043",
 	PremiumOnly = false
 })
 
@@ -122,6 +132,9 @@ local ESPTab = Window:MakeTab({
 	Icon = "rbxassetid://7743876054",
 	PremiumOnly = false
 })
+
+
+
 
 
 
@@ -153,6 +166,52 @@ homeTab:AddParagraph("Upcoming Update","new W update is coming soon with W featu
 
 
 
+
+
+SpotsTab:AddButton({
+	Name = "Scorpion Spot (Legendary)",
+	Callback = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1400,8,472)
+  	end    
+})
+
+
+SpotsTab:AddButton({
+	Name = "Toxic Sewage (Legendary)",
+	Callback = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(333,8,-285)
+  	end    
+})
+
+
+SpotsTab:AddButton({
+	Name = "Ice Ball (Legendary)",
+	Callback = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(442,13,1646)
+  	end    
+})
+
+SpotsTab:AddButton({
+	Name = "T-rex Skull (Mythic)",
+	Callback = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(59,12,698)
+  	end    
+})
+
+SpotsTab:AddButton({
+	Name = "Goblin (Legendary)",
+	Callback = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-880,7,366)
+  	end    
+})
+
+
+SpotsTab:AddButton({
+	Name = "Lunar gifts (Legendary-Mythic)",
+	Callback = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(627,6,373)
+  	end    
+})
 
 
 
@@ -195,7 +254,7 @@ local function CheckIfStaff(CheckPlayer)
 	if StaffRole then
 		game.Players.LocalPlayer:Kick(
 			string.format(
-				"The player '%s' was detected to be a staff member, their role is '%s'.\n\nIf you believe this is false, contact the NEOX HUN",
+				"The player '%s' was detected to be a staff member, their role is '%s'.\n\nIf you believe this is false, contact the NEOX HUB",
 				CheckPlayer.Name, StaffRole
 			)
 		)
@@ -207,12 +266,10 @@ itemsTab:AddToggle({
 	Default = false,
 	Callback = function(Value)
 		if Value then
-			-- Check all current players
 			for _, CheckPlayer in ipairs(game.Players:GetPlayers()) do
 				CheckIfStaff(CheckPlayer)
 			end
 			
-			-- Listen for new players joining
 			game.Players.PlayerAdded:Connect(CheckIfStaff)
 		end
 	end
@@ -324,6 +381,19 @@ if permafrost then
 else
     print("Permafrost folder not found!")
 end
+
+local tropica = mapFolder:FindFirstChild("Tropica")
+if tropica then
+    print("tropica folder found")
+    processModels(tropica, {
+        "BoatDealer", "Merchant", "Solar Guy", "Groot", "Strawbee", "ewfewfewf",
+        "Sunny Rig", "Leafy"  
+    })
+else
+    print("tropica folder not found!")
+end
+
+
 
 TeleportTab:AddDropdown({
     Name = "Select NPC to Teleport",
@@ -489,6 +559,17 @@ ESPTab:AddToggle({
         else
             print("Permafrost folder not found!")
         end
+
+        local tropica = mapFolder:FindFirstChild("Tropica")
+        if tropica then
+            print("Tropica folder found")
+            processModels(tropica, {"BoatDealer", "Merchant", "Solar Guy", "Groot", "Strawbee", "ewfewfewf", "Sunny Rig", "Leafy"}) 
+        else
+            print("Tropica folder not found!")
+        end
+
+
+
 
         print(state and "ESP Enabled for all models" or "ESP Disabled for all models")
     end    
@@ -978,6 +1059,7 @@ ShopTab:AddDropdown({
 
 
 
+ShopTab:AddParagraph("Read Please","If it shows nothing in shovel dropdown then it's mean your executor is not supported")
 
 
 
@@ -1530,6 +1612,5 @@ mainTab:AddToggle({
 })
 
 HandleConnection(Player.PlayerGui.Main.ChildAdded:Connect(LegitDig), "LegitDig")
-
 
 
