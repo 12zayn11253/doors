@@ -109,11 +109,7 @@ local TeleportTab = Window:MakeTab({
 	PremiumOnly = false
 })
 
-local EventTab = Window:MakeTab({
-	Name = "| Event",
-	Icon = "rbxassetid://7734068321",
-	PremiumOnly = false
-})
+
 
 local WeatherTab = Window:MakeTab({
 	Name = "| Environment",
