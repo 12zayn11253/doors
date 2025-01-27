@@ -73,7 +73,7 @@ local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/has
 
 
 
-local Window = OrionLib:MakeWindow({Name = "NEOX ⭐ HUB | Digit v1.3", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
+local Window = OrionLib:MakeWindow({Name = "NEOX ⭐ HUB | Digit v1.3 | .gg/neoxhub", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
 
 local homeTab = Window:MakeTab({
 	Name = "| Home",
