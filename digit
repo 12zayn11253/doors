@@ -160,8 +160,11 @@ homeTab:AddButton({
 
 homeTab:AddParagraph("Join Now!!","Click on above button to copy discord invite")
 homeTab:AddParagraph("Upcoming Update","new W update is coming soon with W features")
+local Section = homeTab:AddSection({
+	Name = "Change Log"
+})
 
-
+homeTab:AddParagraph("New Redeem Code","Added new redeem code")
 
 
 
@@ -652,6 +655,7 @@ itemsTab:AddButton({
             "SECRET",
             "300KLIKES",
             "12MVISITS",
+            "PLS_FALLEN_STAR",
             "ROYAL_SECRET",
         }
 
